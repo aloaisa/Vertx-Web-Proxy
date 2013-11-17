@@ -4,8 +4,8 @@ package proxy
   Servidor Proxy web.
 **/
 
-// Example URL => http://api.geonames.org/citiesJSON?north=44.1&south=-9.9&east=-22.4&west=55.2&lang=de&username=demo
-finalHost = "api.geonames.org"
+// Example URL => http://api.openweathermap.org/data/2.5/weather?q=London,uk
+finalHost = "api.openweathermap.org"
 finalPort = 80
 
 prohibitedUriList = ["/favicon.ico"]
