@@ -1,9 +1,5 @@
 package proxy
 
-/**
-  Servidor Proxy web.
-**/
-
 // Example URL => http://api.openweathermap.org/data/2.5/weather?q=London,uk
 finalHost = "api.openweathermap.org"
 finalPort = 80
