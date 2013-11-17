@@ -1,14 +1,10 @@
 package proxy
 
 // Example URL => http://api.openweathermap.org/data/2.5/weather?q=London,uk
-finalHost = "api.openweathermap.org"
-finalPort = 80
+def propertiesFilePath = "conf/proxy.properties"
+config = new ConfigSlurper().parse(new File(propertiesFilePath).toURL())
 
-prohibitedUriList = ["/favicon.ico"]
-prohibitedMethodsList = ["POST", "PUT", "DELETE", "HEAD", "TRACE", "OPTIONS", "CONNECT", "PATCH"]
-
-
-def client = vertx.createHttpClient(port: finalPort, host: finalHost)
+def client = vertx.createHttpClient(port: config.finalPort, host: config.finalHost)
 
 def server = vertx.createHttpServer().requestHandler { request ->
     
@@ -53,12 +49,12 @@ def controlClientResponse(def clientResponse, def request) {
 
 def isAllowRequest(def request) {
 
-    if ((request.uri in prohibitedUriList) || (request.method in prohibitedMethodsList)) {
+    if ((request.uri in config.prohibitedUriList) || (request.method in config.prohibitedMethodsList)) {
         logger "STOP request, prohibited Uri or Method: ${request.method} - ${request.uri}"
         return false
     }
 
-    logger "Proxying request: http://${finalHost}:${finalPort}${request.uri}"
+    logger "Proxying request: http://${config.finalHost}:${config.finalPort}${request.uri}"
     return true
 }
 
