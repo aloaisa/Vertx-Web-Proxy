@@ -49,13 +49,19 @@ def controlClientResponse(def clientResponse, def request) {
 
 def isAllowRequest(def request) {
 
-    if ((request.uri in config.prohibitedUriList) || (request.method in config.prohibitedMethodsList)) {
+    if (areSecurityPoliciesPassed(request)) {
         logger "STOP request, prohibited Uri or Method: ${request.method} - ${request.uri}"
         return false
     }
 
     logger "Proxying request: http://${config.finalHost}:${config.finalPort}${request.uri}"
     return true
+}
+
+def areSecurityPoliciesPassed(def request) {
+    (request.uri in config.prohibitedUriList) ||
+    (request.method in config.prohibitedMethodsList) ||
+    (request.headers.get('Content-Type') != 'application/json')
 }
 
 def responseError(def request) {
