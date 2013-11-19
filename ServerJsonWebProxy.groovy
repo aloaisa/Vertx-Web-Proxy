@@ -38,18 +38,36 @@ void controlClientResponse(def clientResponse, def request) {
 
 void checkAllowRequest(def request) {
 
-    if (areSecurityPoliciesPassed(request)) {
-        logger "STOP request. Prohibited Uri, Method or Content-Type: ${request.method} - ${request.headers.get('Content-Type')} - ${request.uri}"
-        throw new Exception()
-    }
-
-    logger "Proxying request: http://${config.finalHost}:${config.finalPort}${request.uri}"
+    logger "Proxying request: ${request.method} - ${request.headers.get('Content-Type')} - http://${config.finalHost}:${config.finalPort}${request.uri}"
+    
+    checkAllowMethod(request.method)
+    checkAllowUri(request.uri)
+    checkAllowContentType(request.headers.get('Content-Type'))
 }
 
-boolean areSecurityPoliciesPassed(def request) {
-    (request.uri in config.prohibitedUriList) ||
-    (request.method in config.prohibitedMethodsList) ||
-    (request.headers.get('Content-Type') != 'application/json')
+void checkAllowMethod(def method) {
+
+    boolean methodAllow = (method in config.allowMethodList)
+    if (!methodAllow) {
+        logger "STOP request. Method not allow: ${method}"
+        throw new Exception()
+    }
+}
+
+void checkAllowUri(def uri) {
+
+    def find = config.allowBeginningUriList.find { uriAllow -> uri.startsWith uriAllow }
+    if (!find) {
+        logger "STOP request. Uri not allow: ${uri}"
+        throw new Exception()
+    }
+}
+
+void checkAllowContentType(def contentType) {
+    if (contentType != 'application/json') {
+        logger "STOP request. Content-Type not allow: ${contentType}"
+        throw new Exception()
+    }
 }
 
 void responseError(def request) {
